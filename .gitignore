@@ -1,0 +1,7 @@
+# Ignorar carpeta de imágenes extraídas (solo útiles localmente con IA local)
+
+# Python artifacts (scripts de generación)
+__pycache__/
+*.pyc
+*.pyo
+ocr_cache.json
