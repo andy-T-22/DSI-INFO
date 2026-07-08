@@ -1,0 +1,67 @@
+GUÍA DE NOMENCLATURA Y PROPIEDAD DE MÉTODOS EN DSI
+
+Esta guía resume las convenciones de la cátedra de Diseño de Sistemas de Información (DSI) para el modelado de Diagramas de Secuencia (Realizaciones de Casos de Uso) en UML, la propiedad de los métodos y el uso de polimorfismo.
+
+1. CONVENCIONES DE NOMENCLATURA (camelCase)
+
+Los nombres de los métodos deben reflejar la acción de forma clara utilizando verbos en infinitivo o indicativo.
+
+A. Capa de Presentación / Interfaz (Boundary - Pantalla)
+Representa la interacción directa con el actor:
+- habilitar(): Solicita a la pantalla dibujarse al iniciar el caso de uso.
+- solicitarIngresoDatos() / solicitarSeleccion...(): Pide datos al actor.
+- mostrar[Dato](valor): Muestra información obtenida por el gestor.
+- tomar[Dato](): Captura la acción o entrada del actor.
+
+B. Capa de Control (Controller - Gestor)
+Coordina la lógica del caso de uso:
+- opcionRegistrar[CasoDeUso](): Método inicial invocado por la interfaz.
+- iniciar() / habilitar(): Prepara el gestor.
+- tomar[Dato](valor): Recibe los datos recolectados por la interfaz.
+- buscar[Entidad](): Llama al proceso de búsqueda de un objeto.
+- validar...(): Métodos internos para validar reglas de negocio.
+- calcular...(): Realiza o coordina cálculos.
+- confirmarRegistracion(): Recibe la confirmación final de la pantalla.
+- finCU(): Finaliza el caso de uso.
+
+C. Capa de Dominio (Entities - Entidades)
+- Consultas de comparación (Booleanos - es... / esta... / tiene...):
+  * esTuNumero(numero): Compara el atributo identificador (muy común en Loops de búsqueda).
+  * esDisponible(), estaActivo(), estaVigente().
+  * tieneDescuento().
+- Consultas de valor (Getters - get...):
+  * getPrecioPorHora(), getFechaInicio(), getNombre().
+- Modificaciones (Setters o verbos de dominio - set... / modificar...):
+  * setEstado(nuevoEstado).
+  * actualizarEstado().
+  * anular(), cancelar().
+
+---
+
+2. PROPIEDAD DE LOS MÉTODOS EN DIAGRAMAS DE SECUENCIA
+
+Regla de oro: El objeto que recibe la flecha (el receptor) es el propietario del método.
+
+Mapeo de Ejemplo (Caso: Registrar Alquiler de Bicicleta)
+
+| Mensaje enviado            | Objeto Receptor            | Propietario del Método     |
+|----------------------------|----------------------------|----------------------------|
+| opcionRegistrarAlquiler()  | PantallaRegistrarAlquiler  | PantallaRegistrarAlquiler  |
+| habilitar()                | GestorRegistrarAlquiler    | GestorRegistrarAlquiler    |
+| tomarNumeroBicicleta(nro)  | GestorRegistrarAlquiler    | GestorRegistrarAlquiler    |
+| esTuNumero(nro)            | Bicicleta (en Loop)        | Bicicleta                  |
+| esDisponible()             | Bicicleta (encontrada)     | Bicicleta                  |
+| tomarHorasEstimadas(hs)    | GestorRegistrarAlquiler    | GestorRegistrarAlquiler    |
+| getPrecioPorHora()         | Tarifa                     | Tarifa                     |
+| confirmarAlquiler()        | GestorRegistrarAlquiler    | GestorRegistrarAlquiler    |
+| new(...)                   | Alquiler (Constructor)     | Alquiler                   |
+| setEstado("alquilada")     | Bicicleta                  | Bicicleta                  |
+
+---
+
+3. POLIMORFISMO EN DSI
+
+Se utiliza para evitar condicionales complejos (if / switch) en el gestor delegando el comportamiento a subclases.
+
+- Representación: La flecha del mensaje se envía a la línea de vida de la clase madre o interfaz (ej: t: Tarifa o e: Entrada).
+- Nota en Diagrama: Se añade una nota indicando: "Polimorfismo: se ejecuta en la subclase correspondiente según el tipo."
